@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 	<head>
-		<?php t_headTag( 'Obra sociales' ); ?>
+		<?php t_headTag( 'Obras Sociales' ); ?>
 		<style>
 			label {
 				cursor: default;
@@ -21,44 +21,46 @@
 			<?php if( $createSuccess ): ?>
 			<div class="alert alert-success">
 				<a class="close" data-dismiss="alert" href="#">&times;</a>
-				¡La nueva obra social ha sido creada satisfactoriamente!
+				¡ La nueva obra social ha sido creada satisfactoriamente !
 			</div>
 			<?php elseif( $createError ): ?>
 			<div class="alert alert-error">
 				<a class="close" data-dismiss="alert" href="#">&times;</a>
-				<strong>¡No se ha podido crear la nueva obra social!</strong> Capaz ya exista una con el mismo nombre corto en el sistema.
+				<strong>¡ No se ha podido crear la nueva obra social !</strong> 
+				Es posible que ya exista una con el mismo nombre corto en el sistema.
 			</div>
 			<?php elseif( $editSuccess ): ?>
 			<div class="alert alert-success">
 				<a class="close" data-dismiss="alert" href="#">&times;</a>
-				¡La obra social ha sido editada satisfactoriamente!
+				¡ La obra social ha sido editada satisfactoriamente !
 			</div>
 			<?php elseif( $editError ): ?>
 			<div class="alert alert-error">
 				<a class="close" data-dismiss="alert" href="#">&times;</a>
-				<strong>¡No se ha podido editar la obra social!</strong> Capaz ya exista una con el mismo nombre abreviado en el sistema.
+				<strong>¡ No se ha podido editar la obra social !</strong> 
+				Es posible que ya exista una con el mismo nombre abreviado en el sistema.
 			</div>
 			<?php elseif( $removeSuccess ): ?>
 			<div class="alert alert-success">
 				<a class="close" data-dismiss="alert" href="#">&times;</a>
-				¡La obra social ha sido borrada satisfactoriamente!
+				¡ La obra social ha sido borrada satisfactoriamente !
 			</div>
 			<?php elseif( $removeError ): ?>
 			<div class="alert alert-error">
 				<a class="close" data-dismiss="alert" href="#">&times;</a>
-				<strong>¡No se ha podido borrar la obra social!</strong> Intentelo nuevamente.
+				<strong>¡ No se ha podido borrar la obra social !</strong> Intentelo nuevamente.
 			</div>
 			<?php endif; ?>
 		
 			<div class="is2-pagetitle clearfix">
-				<h3>Obra sociales</h3>
+				<h3>Obras Sociales</h3>
 			</div>
 			
 			<form class="form-horizontal" method="post" action="/obras-sociales/crear">
 				<fieldset>
 					<legend>Crear una nueva obra social</legend>
 					<div class="alert alert-info">
-						Utilice este formulario para crear una nueva obra social en el sistema
+						Utilice este formulario para crear una nueva obra social en el sistema.
 					</div>
 					<div class="control-group">
 						<label class="control-label">Nombre abreviado:</label>
@@ -74,7 +76,7 @@
 					</div>
 					<div class="control-group">
 						<div class="controls">
-							<button type="submit" class="btn btn-primary">Crear obra social</button>
+							<button type="submit" class="btn btn-primary">Crear</button>
 						</div>
 					</div>
 				</fieldset>
@@ -83,7 +85,7 @@
 			
 			<legend>Listado de obras sociales</legend>
 			<div class="alert">
-				A continuación se muestran todas las obra sociales cargadas en el sistema
+				A continuación se muestran todas las obra sociales cargadas en el sistema.
 			</div>
 			<table class="table table-striped is2-grid">
 				<thead>
@@ -139,7 +141,7 @@
 		<form method="post" action="/obras-sociales/borrar" id="is2-modal-remove" class="modal hide fade">
 			<div class="modal-body">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<span><strong>¿Estás seguro que desea borrar esta obra social del sistema?</strong></span>
+				<span><strong>¿ Está seguro que desea borrar esta obra social del sistema ?</strong></span>
 			</div>
 			<div class="modal-footer">
 				<button class="btn" data-dismiss="modal">Cancelar</button>
