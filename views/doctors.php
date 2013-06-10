@@ -20,7 +20,7 @@
 		.is2-doctor-presentation-name {
 			display: inline-block;
 			vertical-align: bottom;
-		
+			text-transform: capitalize;
 		}
 		.is2-doctor-presentation-name h3 {
 			font-size: 20px;
@@ -312,231 +312,258 @@
 	
 		<?php t_startWrapper(); ?>
 		
-		<div class="is2-pagetitle clearfix">
-			<h3>Médicos</h3>
-			<a class="btn pull-right btn-warning" href="/medicos/crear"><i class="icon-plus"></i> Crear un nuevo médico</a>
-		</div>
-		
-		<div class="alert alert-info">
-			A continuación se muestran todos los médicos actualmente cargados en el sistema
-		</div>
-		<div class="is2-doctors-grid">
-		<?php foreach( $doctors as $doctor ): ?>
-			<div class="is2-doctor-presentation">
-				<img src="/img/<?php echo $doctor['avatar']; ?>">
-				<div class="is2-doctor-presentation-name">
-					<h3><?php echo $doctor['apellidos'] . ', ' . $doctor['nombres']; ?></h3>
-					<div class="is2-doctor-presentation-name-speciality"><?php echo $doctor['especialidad']; ?></div>
-					<div class="is2-doctor-actions">
-						<button class="btn btn-mini is2-doctor-presentation-trigger" data-doctor-id="<?php echo $doctor['id']; ?>" title="Ver en detalle"><i class="icon-eye-open"></i></button>
-						<a href="/medicos/<?php echo $doctor['id']; ?>/editar" class="btn btn-mini" title="Editar datos personales"><i class="icon-edit"></i></a>
-						<button class="btn btn-mini btn-danger" data-doctor-id="<?php echo $doctor['id']; ?>"  title="Borrar médico del sistema"><i class="icon-remove-sign icon-white"></i></button>
-					</div>
-				</div>
+			<?php if( $removeSuccess ): ?>
+			<div class="alert alert-success">
+				<a class="close" data-dismiss="alert" href="#">&times;</a>
+				¡El médico han sido borrado satisfactoriamente!
 			</div>
-		<?php endforeach; ?>
-		</div>
+			<?php elseif( $removeError ): ?>
+			<div class="alert alert-error">
+				<a class="close" data-dismiss="alert" href="#">&times;</a>
+				<p><strong>¡No se ha podido borrar al médico!</strong></p>
+				Recuerde que no puede borrar a un médico que tenga turnos asociados.
+			</div>
+			<?php endif; ?>
 		
-		<a class="is2-modal-doctor-trigger" href="#is2-modal-doctor" data-toggle="modal" style="display:none"></a>
-		<div id="is2-modal-doctor" class="modal hide fade">
-			<div class="is2-modal-wrapper">
-				<div class="progress progress-striped active is2-modal-preloader">
-					<div class="bar"></div>
-				</div>
-				<div class="is2-modal-details-header">
-					<div class="modal-body">
-						<button class="btn btn-link is2-modal-close" data-dismiss="modal">
-							<i class="icon-remove-sign icon-white"></i>
-						</button>
-					</div>
-				</div>
-				<div class="is2-modal-details-body">
-					<div class="is2-modal-doctor-information btn-info">
-						<img src="" class="is2-modal-doctor-avatar">
-						<h3><span class="is2-modal-doctor-field" data-field-name="apellidos"></span>, <span class="is2-modal-doctor-field" data-field-name="nombres"></span></h3>
-						<p class="is2-modal-doctor-field" data-field-name="especialidad"></p>
-						<div class="is2-modal-doctor-information-misc">
-							<p>Mat. nac.: <strong class="is2-modal-doctor-field" data-field-name="matriculaNacional"></strong></p>
-							<p>Mat. prov.: <strong class="is2-modal-doctor-field" data-field-name="matriculaProvincial"></strong></p>
-							<p>Teléfonos:<br><strong class="is2-modal-doctor-field" data-field-name="telefono1"></strong><br><strong class="is2-modal-doctor-field" data-field-name="telefono2"></strong></p>
-							<p>Dirección personal:<br><strong class="is2-modal-doctor-field" data-field-name="direccion"></strong></p>
+			<div class="is2-pagetitle clearfix">
+				<h3>Médicos</h3>
+				<a class="btn pull-right btn-warning" href="/medicos/crear"><i class="icon-plus"></i> Crear un nuevo médico</a>
+			</div>
+			
+			<div class="alert alert-info">
+				<p>A continuación se muestran todos los médicos actualmente cargados en el sistema</p>
+				Para saber/modificar los horarios, obras sociales y/ó licencias de un médico haga click en el botón <strong>Ver en detalle</strong> (<button class="btn btn-mini" title="Ver en detalle"><i class="icon-eye-open"></i></button>) que aparece debajo de cada uno de ellos
+			</div>
+			<div class="is2-doctors-grid">
+			<?php foreach( $doctors as $doctor ): ?>
+				<div class="is2-doctor-presentation">
+					<img src="/img/<?php echo $doctor['avatar']; ?>">
+					<div class="is2-doctor-presentation-name">
+						<h3><?php echo $doctor['apellidos'] . ', ' . $doctor['nombres']; ?></h3>
+						<div class="is2-doctor-presentation-name-speciality"><?php echo $doctor['especialidad']; ?></div>
+						<div class="is2-doctor-actions">
+							<button class="btn btn-mini is2-doctor-presentation-trigger" data-doctor-id="<?php echo $doctor['id']; ?>" title="Ver en detalle"><i class="icon-eye-open"></i></button>
+							<a href="/medicos/<?php echo $doctor['id']; ?>/editar" class="btn btn-mini" title="Editar datos personales"><i class="icon-edit"></i></a>
+							<button class="btn btn-mini btn-danger is2-trigger-remove" href="#is2-modal-remove" data-toggle="modal" data-doctor-id="<?php echo $doctor['id']; ?>"  title="Borrar médico del sistema"><i class="icon-remove-sign icon-white"></i></button>
 						</div>
 					</div>
-					
-					<div class="is2-modal-details-tabs btn-inverse">
-						<ul class="nav nav-tabs">
-							<li class="active">
-								<a class="is2-modal-details-tabs-default" href="#is2-doctor-availability-insurances" data-toggle="tab">Horarios y obras sociales</a>
-							</li>
-							<li>
-								<a class="is2-doctor-appointments-trigger" href="#is2-doctor-appointments" data-toggle="tab">Historial de turnos</a>
-							</li>
-							<li>
-								<a class="is2-doctor-licenses-trigger" href="#is2-doctor-licenses" data-toggle="tab">Licencias</a>
-							</li>
-						</ul>
+				</div>
+			<?php endforeach; ?>
+			</div>
+			
+			<a class="is2-modal-doctor-trigger" href="#is2-modal-doctor" data-toggle="modal" style="display:none"></a>
+			<div id="is2-modal-doctor" class="modal hide fade">
+				<div class="is2-modal-wrapper">
+					<div class="progress progress-striped active is2-modal-preloader">
+						<div class="bar"></div>
 					</div>
-					
-					<div class="tab-content">
-						<div id="is2-doctor-availability-insurances" class="tab-pane active">
-							<div class="is2-modal-doctor-status alert alert-success is2-new-availability" style="display:none">
-								Nuevo horario del médico ha sido creado satisfactoriamente
+					<div class="is2-modal-details-header">
+						<div class="modal-body">
+							<button class="btn btn-link is2-modal-close" data-dismiss="modal">
+								<i class="icon-remove-sign icon-white"></i>
+							</button>
+						</div>
+					</div>
+					<div class="is2-modal-details-body">
+						<div class="is2-modal-doctor-information btn-info">
+							<img src="" class="is2-modal-doctor-avatar">
+							<h3><span class="is2-modal-doctor-field" data-field-name="apellidos"></span>, <span class="is2-modal-doctor-field" data-field-name="nombres"></span></h3>
+							<p class="is2-modal-doctor-field" data-field-name="especialidad"></p>
+							<div class="is2-modal-doctor-information-misc">
+								<p>Mat. nac.: <strong class="is2-modal-doctor-field" data-field-name="matriculaNacional"></strong></p>
+								<p>Mat. prov.: <strong class="is2-modal-doctor-field" data-field-name="matriculaProvincial"></strong></p>
+								<p>Teléfonos:<br><strong class="is2-modal-doctor-field" data-field-name="telefono1"></strong><br><strong class="is2-modal-doctor-field" data-field-name="telefono2"></strong></p>
+								<p>Dirección personal:<br><strong class="is2-modal-doctor-field" data-field-name="direccion"></strong></p>
 							</div>
-							<div class="is2-modal-doctor-status alert alert-success is2-remove-availability" style="display:none">
-								El horario del médico ha sido eliminado satisfactoriamente
-							</div>
-							<div class="is2-modal-doctor-status alert alert-success is2-update-insurances" style="display:none">
-								Obras sociales admitidas por el médico han sido actualizadas satisfactoriamente
-							</div>
-							
-							<div class="is2-modal-doctor-availability">
-								<h3>Horarios</h3>
-								<table class="table is2-grid-header">
-									<tr>
-										<th>Día</th>
-										<th>Hora de ingreso</th>
-										<th>Hora de egreso</th>
-										<th></th>
-									</tr>
-								</table>
-								<table class="table is2-doctor-availability-grid">
-									<tr class="is2-doctor-availability-record">
-										<td class="is2-field" data-field-name="diaNombre"></td>
-										<td class="is2-field" data-field-name="horaIngreso"></td>
-										<td class="is2-field" data-field-name="horaEgreso"></td>
-										<td>
-											<a class="btn btn-mini btn-danger is2-doctor-availability-record-remove" href="#" data-toggle="modal" title="Borrar"><i class="icon-remove-sign icon-white"></i></a>
-										</td>
-									</tr>
-								</table>
-								<form class="is2-doctor-availability-form">
-									<table class="table is2-input-grid">
+						</div>
+						
+						<div class="is2-modal-details-tabs btn-inverse">
+							<ul class="nav nav-tabs">
+								<li class="active">
+									<a class="is2-modal-details-tabs-default" href="#is2-doctor-availability-insurances" data-toggle="tab">Horarios y obras sociales</a>
+								</li>
+								<li>
+									<a class="is2-doctor-appointments-trigger" href="#is2-doctor-appointments" data-toggle="tab">Historial de turnos</a>
+								</li>
+								<li>
+									<a class="is2-doctor-licenses-trigger" href="#is2-doctor-licenses" data-toggle="tab">Licencias</a>
+								</li>
+							</ul>
+						</div>
+						
+						<div class="tab-content">
+							<div id="is2-doctor-availability-insurances" class="tab-pane active">
+								<div class="is2-modal-doctor-status alert alert-success is2-new-availability" style="display:none">
+									Nuevo horario del médico ha sido creado satisfactoriamente
+								</div>
+								<div class="is2-modal-doctor-status alert alert-success is2-remove-availability" style="display:none">
+									El horario del médico ha sido eliminado satisfactoriamente
+								</div>
+								<div class="is2-modal-doctor-status alert alert-success is2-update-insurances" style="display:none">
+									Obras sociales admitidas por el médico han sido actualizadas satisfactoriamente
+								</div>
+								
+								<div class="is2-modal-doctor-availability">
+									<h3>Horarios</h3>
+									<table class="table is2-grid-header">
 										<tr>
-											<td class="control-group is2-doctor-availability-day">
-												<input type="text" class="input-mini is2-doctor-availability-day" name="diaNombre" placeholder="Día">
-											</td>
-											<td class="control-group is2-doctor-availability-in">
-												<div class="bootstrap-timepicker">
-													<input type="text" class="input-mini timepicker is2-doctor-availability-in" name="horaIngreso" placeholder="Hora de ingreso">
-												</div>
-											</td>
-											<td class="control-group is2-doctor-availability-out">
-												<div class="bootstrap-timepicker">
-													<input type="text" class="input-mini timepicker is2-doctor-availability-out" name="horaEgreso" placeholder="Hora de egreso">
-												</div>
-											</td>
+											<th>Día</th>
+											<th>Hora de ingreso</th>
+											<th>Hora de egreso</th>
+											<th></th>
+										</tr>
+									</table>
+									<table class="table is2-doctor-availability-grid">
+										<tr class="is2-doctor-availability-record">
+											<td class="is2-field" data-field-name="diaNombre"></td>
+											<td class="is2-field" data-field-name="horaIngreso"></td>
+											<td class="is2-field" data-field-name="horaEgreso"></td>
 											<td>
-												<button class="btn btn-info is2-doctor-availability-trigger" title="Agregar nuevo horario">Agregar</button>
+												<a class="btn btn-mini btn-danger is2-doctor-availability-record-remove" href="#" data-toggle="modal" title="Borrar"><i class="icon-remove-sign icon-white"></i></a>
 											</td>
 										</tr>
 									</table>
+									<form class="is2-doctor-availability-form">
+										<table class="table is2-input-grid">
+											<tr>
+												<td class="control-group is2-doctor-availability-day">
+													<input type="text" class="input-mini is2-doctor-availability-day" name="diaNombre" placeholder="Día">
+												</td>
+												<td class="control-group is2-doctor-availability-in">
+													<div class="bootstrap-timepicker">
+														<input type="text" class="input-mini timepicker is2-doctor-availability-in" name="horaIngreso" placeholder="Hora de ingreso">
+													</div>
+												</td>
+												<td class="control-group is2-doctor-availability-out">
+													<div class="bootstrap-timepicker">
+														<input type="text" class="input-mini timepicker is2-doctor-availability-out" name="horaEgreso" placeholder="Hora de egreso">
+													</div>
+												</td>
+												<td>
+													<button class="btn btn-info is2-doctor-availability-trigger" title="Agregar nuevo horario">Agregar</button>
+												</td>
+											</tr>
+										</table>
+									</form>
+									<div class="is2-doctor-availability-popover alert alert-error is2-popover">
+										El médico ya posee un horario registrado con estos mismo parametros
+									</div>
+								</div>
+								
+								<form class="is2-doctor-insurances">
+									<h3>Obras sociales</h3>
+									<div class="is2-doctor-insurances-grid-wrapper" style="display:none">
+										<div class="is2-doctor-insurances-grid">
+										<?php foreach( $insurances as $insurance ): ?>
+											<label class="checkbox" data-insurance-id="<?php echo $insurance['id']; ?>">
+												<span class="is2-field" data-field-name="nombreCorto"><?php echo $insurance['nombreCorto']; ?></span>
+												<span class="is2-field" data-field-name="nombreCompleto"><?php echo $insurance['nombreCompleto']; ?></span>
+												<input type="checkbox" name="insurancesList[]" value="<?php echo $insurance['id']; ?>">
+											</label>
+										<?php endforeach; ?>
+										</div>
+									</div>
+									<button class="btn btn-info is2-doctor-insurances-trigger" title="Actualizar obras sociales admitidas por el medico">Actualizar</button>
 								</form>
-								<div class="is2-doctor-availability-popover alert alert-error is2-popover">
-									El médico ya posee un horario registrado con estos mismo parametros
+							</div><!-- is2-doctor-availability-insurances -->
+							
+							<div id="is2-doctor-appointments" class="tab-pane">
+								<div class="is2-doctor-appointments-grid">
+									<table class="table is2-doctor-appointments-table">
+										<tr class="is2-doctor-appointments-record">
+											<td class="is2-field" data-field-name="fecha"></td>
+											<td class="is2-field" data-field-name="hora"></td>
+											<td><span class="is2-field" data-field-name="apellidos"></span>, <span class="is2-field" data-field-name="nombres"></span></td>
+											<td class="is2-field" data-field-name="estado"></td>
+											<td>
+												<a href="" class="btn btn-link is2-doctor-appointment-link" target="_blank">Ir al turno <i class="icon-share-alt"></i></a>
+											</td>
+										</tr>
+									</table>
 								</div>
 							</div>
 							
-							<form class="is2-doctor-insurances">
-								<h3>Obras sociales</h3>
-								<div class="is2-doctor-insurances-grid-wrapper" style="display:none">
-									<div class="is2-doctor-insurances-grid">
-									<?php foreach( $insurances as $insurance ): ?>
-										<label class="checkbox" data-insurance-id="<?php echo $insurance['id']; ?>">
-											<span class="is2-field" data-field-name="nombreCorto"><?php echo $insurance['nombreCorto']; ?></span>
-											<span class="is2-field" data-field-name="nombreCompleto"><?php echo $insurance['nombreCompleto']; ?></span>
-											<input type="checkbox" name="insurancesList[]" value="<?php echo $insurance['id']; ?>">
+							<div id="is2-doctor-licenses" class="tab-pane">
+								<div class="is2-modal-doctor-status alert alert-error is2-error-lincense-duplicated" style="display:none">
+									El médico ya posee una licencia en el rango de fechas suministrado
+								</div>
+								<div class="is2-modal-doctor-status alert alert-error is2-error-lincense-busy" style="display:none">
+									<strong>El médico actualmente posee turnos que debe cumplir, no se puede crear la licencia bajo esta circunstancia</strong>
+								</div>
+								<div class="is2-modal-doctor-status alert alert-error is2-error-lincense-underflow" style="display:none">
+									<strong>No puede crear una licencia para tiempo pasado</strong>
+								</div>
+								<div class="is2-modal-doctor-status alert alert-success is2-success-lincense" style="display:none">
+									<div>La licencia del médico ha sido creada satisfactoriamente</div>
+									<strong>Recuerde que durante la duración de la licencia, no se podrán crear nuevos turnos para este médico</strong>
+								</div>
+								<legend>Utilice este formulario para crear una licencia para este médico</legend>
+								<div class="alert">
+									Sepa que no puede crear una licencia para este médico, si es que este posee turnos que actualmente debe cumplir
+								</div>
+								<form class="is2-doctor-licenses-form form-inline">
+									<div class="control-group is2-doctor-licenses-start">
+										<label class="control-label">Desde la fecha
+											<input type="text" placeholder="desde" class="input-small datepicker is2-doctor-licenses-start">
 										</label>
-									<?php endforeach; ?>
+									</div>
+									<div class="control-group is2-doctor-licenses-end">
+										<label class="control-label">hasta el:
+											<input type="text" placeholder="hasta" class=" input-small datepicker is2-doctor-licenses-end">
+										</label>
+									</div>
+									<button type="submit" class="btn btn-info">Crear licencia</button>
+								</form>
+								<div class="alert alert-error is2-popover">
+									El médico ya posee una licencia para la fecha especificada
+								</div>
+								<div class="alert alert-error is2-popover">
+									No se pudo crear la licencia porque este médico posee actualmente turnos que debe cumplir
+								</div>
+								<div class="alert alert-error is2-popover is2-licenses-date-invalid">
+									La fecha es invalida, debe estar en el formato dd/mm/yyyy, por ejemplo algo como: 20/10/2010
+								</div>
+								<div class="alert alert-error is2-popover is2-licenses-date-range">
+									La fecha <strong>desde</strong> es mayor que la fecha <strong>hasta</strong>
+								</div>
+								<div class="alert alert-error is2-popover is2-licenses-date-underflow">
+									La fecha <strong>desde</strong> no puede ser anteror al día presente
+								</div>
+								<legend class="is2-licenses-legend">Historial de licencias</legend>
+								<div class="is2-licenses-wrapper">
+									<table class="table is2-licenses-table" style="display:none">
+										<tr class="is2-licenses-record">
+											<td>
+											Desde el <strong class="is2-field" data-field-name="fechaComienzo"></strong> hasta el <strong class="is2-field" data-field-name="fechaFin"></strong>
+											</td>
+											<td>
+												<button class="btn btn-mini btn-danger is2-license-remove-trigger" title="Borrar licencia"><i class="icon-remove-sign icon-white"></i></button>
+											</td>
+										</tr>
+									</table>
+									<div class="alert alert-info is2-licenses-record-empty" style="display:none">
+										<strong>Médico sin licencias registradas hasta el momento</strong>
 									</div>
 								</div>
-								<button class="btn btn-info is2-doctor-insurances-trigger" title="Actualizar obras sociales admitidas por el medico">Actualizar</button>
-							</form>
-						</div><!-- is2-doctor-availability-insurances -->
-						
-						<div id="is2-doctor-appointments" class="tab-pane">
-							<div class="is2-doctor-appointments-grid">
-								<table class="table is2-doctor-appointments-table">
-									<tr class="is2-doctor-appointments-record">
-										<td class="is2-field" data-field-name="fecha"></td>
-										<td class="is2-field" data-field-name="hora"></td>
-										<td><span class="is2-field" data-field-name="apellidos"></span>, <span class="is2-field" data-field-name="nombres"></span></td>
-										<td class="is2-field" data-field-name="estado"></td>
-										<td>
-											<a href="" class="btn btn-link is2-doctor-appointment-link" target="_blank">Ir al turno <i class="icon-share-alt"></i></a>
-										</td>
-									</tr>
-								</table>
 							</div>
 						</div>
 						
-						<div id="is2-doctor-licenses" class="tab-pane">
-							<div class="is2-modal-doctor-status alert alert-error is2-error-lincense-duplicated" style="display:none">
-								El médico ya posee una licencia en el rango de fechas suministrado
-							</div>
-							<div class="is2-modal-doctor-status alert alert-error is2-error-lincense-busy" style="display:none">
-								<strong>El médico actualmente posee turnos que debe cumplir, no se puede crear la licencia bajo esta circunstancia</strong>
-							</div>
-							<div class="is2-modal-doctor-status alert alert-error is2-error-lincense-underflow" style="display:none">
-								<strong>No puede crear una licencia para tiempo pasado</strong>
-							</div>
-							<div class="is2-modal-doctor-status alert alert-success is2-success-lincense" style="display:none">
-								<div>La licencia del médico ha sido creada satisfactoriamente</div>
-								<strong>Recuerde que durante la duración de la licencia, no se podrán crear nuevos turnos para este médico</strong>
-							</div>
-							<legend>Utilice este formulario para crear una licencia para este médico</legend>
-							<div class="alert">
-								Sepa que no puede crear una licencia para este médico, si es que este posee turnos que actualmente debe cumplir
-							</div>
-							<form class="is2-doctor-licenses-form form-inline">
-								<div class="control-group is2-doctor-licenses-start">
-									<label class="control-label">Desde la fecha
-										<input type="text" placeholder="desde" class="input-small datepicker is2-doctor-licenses-start">
-									</label>
-								</div>
-								<div class="control-group is2-doctor-licenses-end">
-									<label class="control-label">hasta el:
-										<input type="text" placeholder="hasta" class=" input-small datepicker is2-doctor-licenses-end">
-									</label>
-								</div>
-								<button type="submit" class="btn btn-info">Crear licencia</button>
-							</form>
-							<div class="alert alert-error is2-popover">
-								El médico ya posee una licencia para la fecha especificada
-							</div>
-							<div class="alert alert-error is2-popover">
-								No se pudo crear la licencia porque este médico posee actualmente turnos que debe cumplir
-							</div>
-							<div class="alert alert-error is2-popover is2-licenses-date-invalid">
-								La fecha es invalida, debe estar en el formato dd/mm/yyyy, por ejemplo algo como: 20/10/2010
-							</div>
-							<div class="alert alert-error is2-popover is2-licenses-date-range">
-								La fecha <strong>desde</strong> es mayor que la fecha <strong>hasta</strong>
-							</div>
-							<div class="alert alert-error is2-popover is2-licenses-date-underflow">
-								La fecha <strong>desde</strong> no puede ser anteror al día presente
-							</div>
-							<legend class="is2-licenses-legend">Historial de licencias</legend>
-							<div class="is2-licenses-wrapper">
-								<table class="table is2-licenses-table" style="display:none">
-									<tr class="is2-licenses-record">
-										<td>
-										Desde el <strong class="is2-field" data-field-name="fechaComienzo"></strong> hasta el <strong class="is2-field" data-field-name="fechaFin"></strong>
-										</td>
-										<td>
-											<button class="btn btn-mini btn-danger is2-license-remove-trigger" title="Borrar licencia"><i class="icon-remove-sign icon-white"></i></button>
-										</td>
-									</tr>
-								</table>
-								<div class="alert alert-info is2-licenses-record-empty" style="display:none">
-									<strong>Médico sin licencias registradas hasta el momento</strong>
-								</div>
-							</div>
-						</div>
-					</div>
-					
-				</div><!-- is2-modal-details-body -->
-			</div><!-- is2-modal-wrapper -->
-		</div>
+					</div><!-- is2-modal-details-body -->
+				</div><!-- is2-modal-wrapper -->
+			</div>
+
+			<form method="post" action="/medicos/borrar" id="is2-modal-remove" class="modal hide fade">
+				<div class="modal-body">
+					<button class="close" data-dismiss="modal">&times;</button>
+					<p><strong>¿Estás seguro que desea borrar este médico?</strong></p>
+					Sepa que no se puede borrar un médico que posea turnos asociados en el sistema. Primero debe borrar sus turnos asociados y luego si, podrá borrar a este médico.
+				</div>
+				<div class="modal-footer">
+					<button class="btn" data-dismiss="modal">Cancelar</button>
+					<button class="btn btn-primary" type="submit">Borrar</button>
+				</div>
+				<input type="hidden" name="id">
+			</form>
 
 		<?php t_endWrapper(); ?>
 	
@@ -1170,6 +1197,11 @@
 			success: removedLicense,
 			error: removedLicense
 		} );
+	} );
+	
+// *** remove medico funcionalidad *** //
+	$( '.is2-doctors-grid' ).delegate( '.is2-trigger-remove', 'click', function( e ) {
+		$( '#is2-modal-remove' ).find( 'input[name="id"]' ).val( $( this ).attr( 'data-doctor-id' ) );
 	} );
 	
 // *** change hash listener *** //

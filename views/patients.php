@@ -81,13 +81,11 @@
 	</style>
 	<style>
 		/* popup de paciente detalles */
-		@import url(http://fonts.googleapis.com/css?family=Gloria+Hallelujah|Open+Sans);
-		
 		#is2-modal-details {
 			background: #fff;
 			border-radius: 0;
 			padding: 0;
-			font-family: 'Gloria Hallelujah', cursive;
+			font-family: "Open Sans", cursive;
 			width: 850px;
 			max-height: 495px;
 			z-index: 100000;
@@ -162,6 +160,7 @@
 			text-overflow: ellipsis;
 			padding: 10px 5px 10px 50px;
 			border-top: 0;
+			font-size: 22px;
 		}
 		.is2-modal-details-appointments tr {
 			border-bottom: 1px dotted #ccc;
@@ -408,6 +407,7 @@
 						<li class="is2-patient-data" data-field-name="dni"></li>
 						<li class="is2-patient-data" data-field-name="fechaNacimiento"></li>
 						<li class="is2-patient-data" data-field-name="edad"></li>
+						<li class="is2-patient-data" data-field-name="direccion"></li>
 					</ul>
 				</div>
 				<div class="is2-modal-details-body">

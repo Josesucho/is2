@@ -305,7 +305,7 @@
 						<?php if( $appointment['hora'] ): ?>
 						<tr class="is2-appointments-row" data-appointment-id="<?php echo $appointment['id']; ?>" data-appointment-date="<?php echo $dateLocale; ?>" data-appointment-status="<?php echo $appointment['estado']; ?>">
 							<td>&nbsp;</td>
-							<td class="is2-appointment-time"><?php echo substr( $appointment['hora'], 0, 5 ); ?></td>
+							<td class="is2-appointment-time"><?php echo __trimTime( $appointment['hora'] ); ?></td>
 							<td>
 								<img class="is2-doctor-img" src="/img/<?php echo $appointment['medicoAvatar']; ?>">
 								<a href="/medicos#id=<?php echo $appointment['idMedico']; ?>" target="_blank"><?php echo $appointment['medicoApellidos'] . ', ' .  $appointment['medicoNombres']; ?></a>

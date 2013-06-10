@@ -33,6 +33,7 @@
 		// 5) que el paciente tenga registrado un turno para la misma fecha y hora
 		//	pero con otro medico
 		// 6) que el medico este de licencia para la fecha requerida
+		// 7) VERIFICAR LA OBRA SOCIAL ESTA HABILITADA
 		$insertId = DB::insert(
 			'
 				INSERT INTO 
@@ -42,8 +43,8 @@
 			',
 			array( $date, $time, $doctorID, $patientID, 'esperando' )
 		);
+
 		if( !$insertId ) {
-			
 			__redirect( '/turnos/crear?error=crear-turno&campos=' . base64_encode( implode( '|', DB::getErrorList() ) ) );
 		}
 		

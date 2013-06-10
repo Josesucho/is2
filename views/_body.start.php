@@ -1,5 +1,5 @@
 	<body>
-		<header>
+		<header class="clearfix">
 			<h1>Climedis</h1>
 			<div class="alert alert-info is2-welcome">
 				Hola, <strong><?php echo $username; ?></strong>

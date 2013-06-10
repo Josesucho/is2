@@ -1,5 +1,7 @@
 SET NAMES 'utf8';
 
+SET @startTime = UNIX_TIMESTAMP();
+
 DROP DATABASE IF EXISTS is2;
 CREATE DATABASE is2 CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 USE is2;
@@ -144,6 +146,7 @@ CREATE TABLE pacientes(
 	dni VARCHAR( 255 ),
 	fechaNacimiento DATE,
 	telefono VARCHAR( 255 ),
+	direccion TEXT,
 	idObraSocial INTEGER NULL,
 	nroAfiliado VARCHAR( 255 ) NULL,
 	UNIQUE INDEX( dni )
@@ -386,3 +389,5 @@ CREATE TRIGGER licencias_crearLicencia
 	END;
 $$
 DELIMITER ;
+
+SELECT CONCAT( UNIX_TIMESTAMP() - @startTime, ' seconds' ) AS ' ';

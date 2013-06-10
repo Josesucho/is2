@@ -3,16 +3,7 @@
 // ESTAS VARIABLES SON LAS QUE SE USAN EL VIEW
 	$username = __getUsername();
 	
-	$specialities = DB::select(
-		'
-			SELECT
-				*
-			FROM
-				especialidades
-			ORDER BY
-				nombre
-		'
-	);
+	$specialities = q_getAllSpecialities();
 	
 	$createSuccess = false;
 	$createError = false;

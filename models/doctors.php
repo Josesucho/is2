@@ -19,12 +19,23 @@
 	
 	$insurances = q_getAllInsurances();
 	
+	$removeSuccess = false;
+	$removeError = false;
+	if( __issetGETField( 'exito', 'borrar-medico' ) ) {
+		$removeSuccess = true;
+	// ... o de error
+	} else if( __issetGETField( 'error', 'borrar-medico' ) ) {
+		$removeError = true;
+	}
+	
 	__render( 
 		'doctors', 
 		array(
 			'username' => $username,
 			'doctors' => $doctors,
-			'insurances' => $insurances
+			'insurances' => $insurances,
+			'removeSuccess' => $removeSuccess,
+			'removeError' => $removeError
 		)
 	);
 /* }}} */

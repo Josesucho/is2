@@ -26,6 +26,7 @@
 					dni = ?,
 					fechaNacimiento = ?,
 					telefono = ?,
+					direccion = ?,
 					idObraSocial = ?,
 					nroAfiliado = ?
 				WHERE

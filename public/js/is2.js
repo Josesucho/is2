@@ -44,7 +44,7 @@ IS2.loadPrevState = function( name, callback ) {
 
 IS2.savePrevState = function( name, skip ) {
 	var prevState = {};
-	$( 'form ' ).find( 'input, select' ).each( function( e ) {
+	$( 'form ' ).find( 'input, select, textarea' ).each( function( e ) {
 		var $el = $( this ),
 			fieldName = $el.attr( 'name' );
 		if( fieldName && fieldName !== skip ) {
@@ -97,9 +97,9 @@ IS2.showNewRecord = function( $el ) {
 };
 
 IS2.emptyFieldMsg = '<div class="alert alert-error is2-popover-msg is2-patient-empty">Este campo no puede estar vacio</div>';
-IS2.lookForEmptyFields = function( $theForm, notShowPopover ) {
+IS2.lookForEmptyFields = function( $theForm, notShowPopover, notFind ) {
 	
-	var $fields = $theForm.find( 'input:not( [type=hidden] )' ), $field,
+	var $fields = !notFind ? $theForm.find( 'input:not( [type=hidden] ), textarea' ) : $theForm, $field,
 		$groupControl,
 		isError = false,
 		i = 0, l = $fields.length;
@@ -114,7 +114,7 @@ IS2.lookForEmptyFields = function( $theForm, notShowPopover ) {
 
 		if( !$field.val().trim() ) {
 			if( !notShowPopover ) {
-				$field.popover( { content: IS2.emptyFieldMsg, html: true, trigger: 'manual' } ).popover( 'show' );
+				$field.popover( { content: IS2.emptyFieldMsg, html: true, trigger: 'manual', placement: $field.attr( 'data-placement' ) || 'right' } ).popover( 'show' );
 			}
 			$groupControl.addClass( 'error' );
 			isError = true;

@@ -16,11 +16,11 @@
 				INSERT INTO
 					pacientes
 				VALUES
-					( null, ?, ?, ?, ?, ?, ?, ?, ? )
+					( null, ?, ?, ?, ?, ?, ?, ?, ?, ? )
 			',
 			$fields
 		);
-		
+
 		if( !$insertId ) {
 			__redirect( '/pacientes/crear?error=crear-paciente&campos=' . base64_encode( implode( '|', DB::getErrorList() ) ) );
 		}
@@ -63,9 +63,9 @@
 				'dni' => '',
 				'fechaNacimiento' => '',
 				'telefono' => '',
+				'direccion' => '',
 				'idObraSocial' => '',
-				'nroAfiliado' => '',
-				'id' => false
+				'nroAfiliado' => ''
 			)
 		)
 	);

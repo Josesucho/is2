@@ -28,7 +28,13 @@
 	
 	// pido los horarios del medico
 	// eso siempre va estar en la respuesta
-	$doctorAvailibilities = q_getDoctorAvailabilities( $doctorID );
+	$doctorAvailabilities = q_getDoctorAvailabilities( $doctorID );
+	for( $i = 0, $l = count( $doctorAvailabilities ); $i < $l; $i++ ) {
+		$doctorAvailability = &$doctorAvailabilities[$i];
+		$doctorAvailability['horaIngreso'] = __trimTime( $doctorAvailability['horaIngreso'] );
+		$doctorAvailability['horaEgreso'] = __trimTime( $doctorAvailability['horaEgreso'] );
+		$doctorAvailability['diaNombre'] = __getDayName( $doctorAvailability['dia'] );
+	}
 	
 	// debo saber cual es dia en donde case $date
 	$day = date( 'N', strtotime( $date ) );
@@ -63,7 +69,7 @@
 	__echoJSON( array( 
 		'success' => true,
 		'data' => array( 
-			'availabilities' => $doctorAvailibilities,
+			'availabilities' => $doctorAvailabilities,
 			'isAvailable' =>$isDoctorAvailable,
 			'hasAppointmentAlready' => $hasAppointmentAlready,
 			'hasLicense' => $hasLicense

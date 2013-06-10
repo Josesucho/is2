@@ -50,7 +50,7 @@ Para este caso y si estan con WampServer, mysql esta (en mi caso) aca
 
 Por ejemplo le quedaria algo como esto:
 
-`mysql -u root -p123456 < _init_db.sql`
+`mysql --local-infile -u root -p123456 < _init_db.sql`
 
 *Listo ya estamos!*
 

@@ -39,12 +39,12 @@
 		return DB::select(
 			'
 				SELECT
-					p.id, p.apellidos, p.nombres, p.sexo, p.dni, p.idObraSocial, p.fechaNacimiento, p.telefono, p.nroAfiliado,
+					p.id, p.apellidos, p.nombres, p.sexo, p.dni, p.idObraSocial, p.fechaNacimiento, p.telefono, p.direccion, p.nroAfiliado,
 					os.nombreCorto AS obraSocialNombre
 				FROM
 					pacientes AS p
-				INNER JOIN obrasSociales AS os
-					ON os.id = p.idObraSocial
+					INNER JOIN obrasSociales AS os
+						ON os.id = p.idObraSocial
 				WHERE ' .
 					implode( ' AND ', $whereCluase ) .
 			
@@ -97,6 +97,19 @@
 					os.nombreCorto
 			',
 			array( $doctorID )
+		);
+	}
+	
+	function q_getAllSpecialities() {
+		return DB::select(
+			'
+				SELECT
+					*
+				FROM
+					especialidades
+				ORDER BY
+					nombre
+			'
 		);
 	}
 

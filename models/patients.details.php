@@ -5,7 +5,7 @@
 	$patientData = DB::select(
 		'
 			SELECT
-				p.id, p.apellidos, p.nombres, p.fechaNacimiento, p.dni, p.telefono, p.nroAfiliado,
+				p.id, p.apellidos, p.nombres, p.fechaNacimiento, p.dni, p.telefono, p.direccion, p.nroAfiliado,
 				os.nombreCorto AS obraSocialAbbr, os.nombreCompleto AS obraSocialNombre
 			FROM
 				pacientes AS p

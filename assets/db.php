@@ -17,6 +17,7 @@
 			'/^.*turnos_medico_ocupado.*$/' => 'turnos_medico_ocupado',
 			'/^.*turnos_paciente_ya_tiene_turno.*$/' => 'turnos_paciente_ya_tiene_turno',
 			'PROCEDURE is2.medico_esta_con_licencia does not exist' => 'turnos_medico_con_licencia',
+			'PROCEDURE is2.medico_no_soporta_obra_social_paciente does not exist' => 'turnos_obra_social_incompatibe',
 			
 			// errores para crear licencia
 			'PROCEDURE is2.licencia_medico_tiene_turnos does not exist' => 'licencia-medico-tiene-turnos',
@@ -146,7 +147,7 @@
 			self::$db->autocommit( false );
 			
 			foreach( $queries as $type => $data ) {
-				$exitCode = self::{$type}( $data['query'], $data['replacements'] );
+				$exitCode = call_user_func_array( array( 'DB', $type ), array( $data['query'], $data['replacements'] ) );
 				if( ( is_integer( $exitCode ) && $exitCode < 0 ) || ( is_bool( $exitCode ) && !$exitCode ) ) {
 					self::$db->rollback();
 					self::$db->autocommit( true );
@@ -222,6 +223,7 @@
 			__err( $msg );
 			
 			$errorString = self::$db->error;
+			$errorNro = self::$db->errno;
 			$theError = null;
 			
 			foreach( self::$errorsDict as $errorStringMap => $errorMeaning ) {
@@ -230,12 +232,18 @@
 					break;
 				}
 			}
-			
+		
 			if( !$theError ) {
-				self::$errorsList[] = self::$errorsCode[self::$db->errno];
-			} else {
-				self::$errorsList[] = $theError;
+				// check for error code
+				if( isset( self::$errorsCode[$errorNro] ) ) {
+					$theError = self::$errorsCode[$errorNro];
+				// an error that has not mapping
+				} else {
+					$theError = $errorNro;
+				}
 			}
+			
+			self::$errorsList[] = $theError;
 		}
 	}
 	

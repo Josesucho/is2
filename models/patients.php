@@ -218,6 +218,7 @@ CASO CONTRARIO LISTO LOS APELLIDO QUE EMPIECEN CON 'A' */
 	// ... o de error
 	} else if( __issetGETField( 'error', 'borrar-paciente' ) ) {
 		$removeError = true;
+		
 	} else if( __issetGETField( 'error', 'editar-paciente' ) ) {
 		$editError = true;
 	

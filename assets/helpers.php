@@ -122,15 +122,15 @@
 	function __toISODate( $value ) {
 		$value = explode( '/', trim( $value ) );
 		if( count( $value ) != 3 ) {
-			return false;
+			return '';
 		}
 		$year = $value[2];
 		if( $year <= 0 || strlen( (int) $year ) != 4 ) {
-			return false;
+			return '';
 		}
 		$month = $value[1];
 		if( $month <= 0 || $month > 12 ) {
-			return false;
+			return '';
 		}
 		if( $month < 10 ) {
 			$month = '0' . (int) $month;
@@ -138,7 +138,7 @@
 		$date = $value[0];
 		$yearMonth = $year . '-' . $month;
 		if( $date <= 0 || $date > date( 't', strtotime( $yearMonth ) ) ) {
-			return false;
+			return '';
 		}
 		if( $date < 10 ) {
 			$date = '0' . (int) $date;
@@ -157,17 +157,17 @@
 	
 	function __toISOTime( $value ) {
 		if( !preg_match( '/^(\d{2}):(\d{2})(?: (PM|AM)|(:\d{2})?)$/i', trim( $value ), $m ) ) {
-			return false;
+			return '';
 		}
 		if( count( $m ) < 3 ) {
-			return false;
+			return '';
 		}
 		$hours = $m[1];
 		$minutes = $m[2];
 		$meridian = isset( $m[3] ) ? $m[3] : false;
 		if( $meridian ) {
 			if( $hours > 12 || $minutes > 59 ) {
-				return false;
+				return '';
 			}
 			if( $meridian == 'PM' ) {
 				$hours += 12;
@@ -202,7 +202,7 @@
 
 	function __cleanDNI( $value ) {
 		$value = str_replace( '.', '', trim( $value ) );
-		return preg_match( '/^\d+$/', $value ) ? $value : false;
+		return preg_match( '/^\d+$/', $value ) ? $value : '';
 	}
 	
 	function __sanitizeValue( $value ) {
@@ -210,20 +210,20 @@
 	}
 	
 	function __validateID( $value ) {
-		return $value > 0 ? (int) $value : false;
+		return $value > 0 ? (int) $value : '';
 	}
 	
 	function __cleanTel( $value ) {
-		return ( $m = preg_replace( '/^[^#*\d-()]+$/', '', trim( $value ) ) ) ? $m : false;
+		return ( $m = preg_replace( '/^[^#*\d-()]+$/', '', trim( $value ) ) ) ? $m : '';
 	}
 	
 	function __validateGender( $value ) {
 		$value = strtoupper( $value );
-		return in_array( $value, array( 'F', 'M' ) ) ? $value : false;
+		return in_array( $value, array( 'F', 'M' ) ) ? $value : '';
 	}
 	
 	function __validateEmail( $value ) {
-		return preg_match( '/^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]+$/i', trim( $value ) ) ? $value : false;
+		return preg_match( '/^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]+$/i', trim( $value ) ) ? $value : '';
 	}
 	
 	function __getAppointmentStatus( $value ) {
@@ -232,11 +232,11 @@
 		} else if( $value == 'cancelados' ) {
 			return 'cancelado';
 		}
-		return false;
+		return '';
 	}
 	
 	function __getDayName( $dayIndex ) {
-		$DAYNAME = [ 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo' ];
+		$DAYNAME = array( 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo' );
 		return isset( $DAYNAME[$dayIndex-1] ) ? $DAYNAME[$dayIndex-1] : false;
 	}
 	
