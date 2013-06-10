@@ -39,7 +39,11 @@ Creando la base de datos y sus tablas
 ------------------------------------------------
 Para crear la base de datos que usara la aplicacion con sus respectivas tablas tiene que correr el siguiente comando desde la consola
 
-`mysql -u %usuario% -p%clave% < _init_db.sql`
+`mysql --local-infile -u %usuario% -p%clave% < _init_db.sql`
+
+**ES PROBABLE QUE EL COMANDO mysql NO SEA RECONOCIDO**
+Para este caso y si estan con WampServer, mysql esta (en mi caso) aca
+	`C:\wamp\bin\mysql\mysql5.5.8\bin\mysql` 
 
 * Tiene que reemplazar el `%usuario%` y `%clave%` por los datos de usuario y contraseña que se usan para acceder a la base de datos, por ejemplo **root** como usuario y si **no hay password** omitan el `-p`
 * Sepan que deben estar ubicado desde la consola en la carpeta donde esta el archivo `_init_db.sql`
@@ -58,3 +62,14 @@ Los usuarios son dos:
 2. admin
 	
 Para ambos sus password son **123456**
+
+DEBUG
+======
+Para debuggear la aplicacion tienen que:
+
+1. Usar Firefox
+2. Tenerle instalado el plugin [FireBug](https://addons.mozilla.org/es/firefox/addon/firebug/)
+3. Tener instalado el addon para FireBug, [FirePHP](https://addons.mozilla.org/en-US/firefox/addon/firephp/)
+3. Listo
+
+Para tirarle mensajes a FirePHP y que estos se vean en la consola de FireBug, deben llamar a la funcion `__log` en donde mas lo quieran en su codigo PHP.

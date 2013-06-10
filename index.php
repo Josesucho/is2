@@ -1,89 +1,87 @@
 <?php
 
+	// con este variable puedo tirale mensaje a FirePHP
+	// https://addons.mozilla.org/en-US/firefox/addon/firephp
+	// los mensajes se tiran llamando a la funcion __log( 'message' );
+	$DEBUG = true;
+	if( $DEBUG ) {
+		ini_set( 'display_errors', 1 );
+		ini_set( 'display_startup_errors', 1 );
+		error_reporting( -1 );
+	}
+	
 	require './assets/db.php';
+	require './assets/router.php';
 	// las funciones helpers tienen como prefijo __
 	require './assets/helpers.php';
-	// las funciones template tienen como prefijo __
+	// las funciones template tienen como prefijo t_
 	require './views/_template.php';
-	// init
-	$db = new DB();
+	// las queries tienen como prefijo q_
+	require './assets/queries.php';
+	// init some things
+	DB::init();
+	Router::init();
 	__initSession();
+	__initDebugging();
+	// enforce utf8 output
+	__forceUTF8Enconding();
 	
-	// veo adonde quiere ir el usuario
-	$reqURI = parse_url( $_SERVER['REQUEST_URI'] );
-	$page = preg_replace( '/\/?index\.php\/?/', '/', $reqURI['path'] );
+	// hago a que no pueda acceder a una pagina que necesite
+	// de que el usuario este logueado para verla
+	Router::auth( array( '/', '/iniciar-sesion' ), '/iniciar-sesion' );
 
-	// debo saber si la pagina aonde ira el usuario
-	// solo puede ser accedida por usuarios loguedaos
-	// en este array tengo las paginas QUE NO!! necesitan
-	// de que el usuario este loguedo para verlas
-	$guestPages = array( '/', '/iniciar-sesion' );
-	for( $i = 0, $l = count( $guestPages ); $i < $l; $i++ ) {
-		$guest = $guestPages[$i];
-		// la pagina que quiere ver el usuario no necesita
-		// de que el usuario este logueado para verla, terminado
-		if( $guest == $page ) {
-			break;
-		}
-	}
-	// la pagina que quiere ver el usuario es protegida
-	// vemos si el usuario esta logueado
-	if( $i == $l && !__isUserLogged() ) {
-		__redirect( '/iniciar-sesion' );
-	}
-
-	// routeamos
-	if( $page === '/' || $page == '/iniciar-sesion' ) {
-		require './controllers/login.php';
-	} else if( $page == '/cerrar-sesion' ) {
-		require './controllers/logout.php';
-	
+	$routes = array(
+		'/' => 'login',
+		'/iniciar-sesion' => 'login',
+		'/cerrar-sesion' => 'logout',
+		'/404' => '404',
+		
 // *** TURNOS *** //
-	} else if( $page == '/turnos' ) {
-		require './controllers/appointments.php';
-	} else if( $page == '/turnos/confirmar' ) {
-		require './controllers/appointments.confirm.php';
-	} else if( $page == '/turnos/cancelar' ) {
-		require './controllers/appointments.cancel.php';
-	} else if( $page == '/turnos/borrar' ) {
-		require './controllers/appointments.remove.php';
-	} else if( $page == '/turnos/reiniciar' ) {
-		require './controllers/appointments.reset.php';
-	} else if( $page == '/turnos/buscar' ) {
-		require './controllers/appointments.search.php';
-	} else if( $page == '/turnos/crear' ) {
-		require './controllers/appointments.new.php';
+		'/turnos' => 'appointments',
+		'/turnos/confirmar' => 'appointments.confirm',
+		'/turnos/cancelar' => 'appointments.cancel',
+		'/turnos/borrar' => 'appointments.remove',
+		'/turnos/reiniciar' => 'appointments.reset',
+		'/turnos/busqueda-rapida' => 'appointments.search.quick',
+		'/turnos/busqueda-avanzada' => 'appointments.search.advanced',
+		'/turnos/crear' => 'appointments.new',
 
 // *** MEDICOS *** //
-	} else if( $page == '/medicos/comprobar-horarios-disponibilidad' ) {
-		require './controllers/doctors.check.availability.php';
-	
+		'/medicos/comprobar-horarios-disponibilidad' => 'doctors.check.availability',
+		'/medicos' => 'doctors',
+		'/medicos/:id' => 'doctors.details',
+		'/medicos/:id/crear-horario' => 'doctors.availability.new',
+		'/medicos/:id/borrar-horario' => 'doctors.availability.remove',
+		'/medicos/:id/actualizar-obras-sociales-admitidas' => 'doctors.insurances.update',
+		'/medicos/:id/historial' => 'doctors.history',
+		'/medicos/:id/crear-licencia' => 'doctors.license.new',
+		'/medicos/:id/licencias' => 'doctors.license',
+		'/medicos/:id/borrar-licencia' => 'doctors.license.remove',
+		
 // *** PACIENTES *** //
-	} else if( $page == '/pacientes' ) {
-		require './controllers/patients.php';
-	} else if( $page == '/pacientes/buscar/dni' ) {
-		require './controllers/patients.search.dni.php';
-	
+		'/pacientes' => 'patients',
+		'/pacientes/buscar/dni' => 'patients.search.dni',
+		'/pacientes/borrar' => 'patients.remove',
+		'/pacientes/crear' => 'patients.new',
+		'/pacientes/:id/editar' => 'patients.edit',
+		'/pacientes/listar-por-letra/:char' => 'patients',
+		'/pacientes/busqueda-avanzada' => 'patients.search.advanced',
+		'/pacientes/busqueda-rapida' => 'patients.search.quick',
+		'/pacientes/:id' => 'patients.details',
+
 // *** ESPECIALIDADES *** //
-	} else if( $page == '/especialidades' ) {
-		require './controllers/specialities.php';
-	} else if( $page == '/especialidades/crear' ) {
-		require './controllers/specialities.new.php';
-	} else if( $page == '/especialidades/editar' ) {
-		require './controllers/specialities.edit.php';
-	} else if( $page == '/especialidades/borrar' ) {
-		require './controllers/specialities.remove.php';
+		'/especialidades' => 'specialities',
+		'/especialidades/crear' => 'specialities.new',
+		'/especialidades/editar' => 'specialities.edit',
+		'/especialidades/borrar' => 'specialities.remove',
 
 // *** OBRA SOCIALES *** //
-	} else if( $page == '/obras-sociales' ) {
-		require './controllers/insurances.php';
-	} else if( $page == '/obras-sociales/crear' ) {
-		require './controllers/insurances.new.php';
-	} else if( $page == '/obras-sociales/editar' ) {
-		require './controllers/insurances.edit.php';
-	} else if( $page == '/obras-sociales/borrar' ) {
-		require './controllers/insurances.remove.php';
-	}
+		'/obras-sociales' => 'insurances',
+		'/obras-sociales/crear' => 'insurances.new',
+		'/obras-sociales/editar' => 'insurances.edit',
+		'/obras-sociales/borrar' => 'insurances.remove'
+	);
 	
+	require Router::start( $routes, '/404' );
 
 ?>

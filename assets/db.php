@@ -2,15 +2,37 @@
 
 	class DB {
 	
-		private $db;
-		private $typesDict = array(
+		private static $db;
+		private static $replacements = array();
+		
+		private static $typesDict = array(
 			'integer' => 'i',
 			'string' => 's',
 			'double' => 'd'
 		);
 		
+		private static $errorsDict = array(
+			// errores para crear turno
+			'PROCEDURE is2.medico_no_antiende_fecha_hora_requerido does not exist' => 'turnos_medico_no_atiende',
+			'/^.*turnos_medico_ocupado.*$/' => 'turnos_medico_ocupado',
+			'/^.*turnos_paciente_ya_tiene_turno.*$/' => 'turnos_paciente_ya_tiene_turno',
+			'PROCEDURE is2.medico_esta_con_licencia does not exist' => 'turnos_medico_con_licencia',
+			
+			// errores para crear licencia
+			'PROCEDURE is2.licencia_medico_tiene_turnos does not exist' => 'licencia-medico-tiene-turnos',
+			'PROCEDURE is2.licencia_medico_ya_esta_con_licencia does not exist' => 'licencia-ya-existe',
+			'PROCEDURE is2.licencia_en_pasado does not exist' => 'licencia-en-pasado'
+		);
+		private static $errorsCode = array(
+			'1062' => 'duplicado',
+			'1054' => 'columna desconocida',
+			'1064' => 'error en el diseño de la query',
+			'1451' => 'clave foreana restriccion'
+		);
+		private static $errorsList = array();
+		
 	// *** PUBLIC METHODS *** //
-		function __construct() {
+		static function init() {
 		
 			if( file_exists( './mysql.ini' ) ) {
 				$credenciales = parse_ini_file( './mysql.ini' );
@@ -21,130 +43,199 @@
 				);
 			}
 
-			$this->db = new mysqli( 'localhost', $credenciales['usuario'], $credenciales['clave'], 'is2' );
-			if( $this->db->connect_errno ) {
-			    die( 'Failed to connect to MySQL: ' . $this->db->connect_error );
+			self::$db = new mysqli( 'localhost', $credenciales['usuario'], $credenciales['clave'], 'is2' );
+			if( self::$db->connect_errno ) {
+			    die( 'Failed to connect to MySQL: ' . self::$db->connect_error );
 			}
 
+			self::$db->set_charset( 'utf8' );
 		}
 		
-		function select( $query, $replacements = array() ) {
-
+		static function select( $query, $replacements = array() ) {
+		
+			self::_log( $query, $replacements );
+	
 			$res = array();
 			
-			if( $stmt = $this->db->prepare( $query ) ) {
-
-				$this->_executeQuery( $stmt, $replacements );
-
-				// debo conseguir el nombre de las columnas
-				$metadata = $stmt->result_metadata();
-				$columns = array();
-				while( $field = $metadata->fetch_field() ) {
-					$columns[] = $field->name;
-				}
-				// ahora por cada nombre de columna
-				// creo una variable con ese nombre de columna
-				foreach( $columns as $field ) {
-				    $values[] = &${$field};
-				}
-				
-				// internamente hace un $stmt->bind_result
-				$this->_bindResult( $stmt, $values );
-			       
-				// lito, solo queda iterar cada fila y guardarla en $res
-				$res = array();
-				$i = 0;
-				// pido la fila actual y la proceso
-				while( $stmt->fetch() ) {
-					foreach( $columns as $field ) {
-						$res[$i][$field] = $$field;
+			if( $stmt = self::$db->prepare( $query ) ) {
+			
+				if( self::_executeQuery( $stmt, $replacements ) ) {
+					// debo conseguir el nombre de las columnas
+					$metadata = $stmt->result_metadata();
+					$columns = array();
+					while( $field = $metadata->fetch_field() ) {
+						$columns[] = $field->name;
 					}
-					$i++;
+					// ahora por cada nombre de columna
+					// creo una variable con ese nombre de columna
+					foreach( $columns as $field ) {
+					    $values[] = &${$field};
+					}
+					
+					// internamente hace un $stmt->bind_result
+					self::_bindResult( $stmt, $values );
+				       
+					// lito, solo queda iterar cada fila y guardarla en $res
+					$res = array();
+					$i = 0;
+					// pido la fila actual y la proceso
+					while( $stmt->fetch() ) {
+						foreach( $columns as $field ) {
+							$res[$i][$field] = $$field;
+						}
+						$i++;
+					}
 				}
 				
 				$stmt->close();
+				
+			} else {
+				self::_err( self::$db->error );
 			}
 			
 			return $res;
 		}
 		
-		function update( $query, $replacements ) {
-		
-			$rowsAffected = 0;
+		static function update( $query, $replacements ) {
+
+			self::_log( $query, $replacements );
+
+			$rowsAffected = -1;
 			
-			if( $stmt = $this->db->prepare( $query ) ) {
+			if( $stmt = self::$db->prepare( $query ) ) {
 				
-				$this->_executeQuery( $stmt, $replacements );
-				
-				$rowsAffected = $stmt->affected_rows;
+				if( self::_executeQuery( $stmt, $replacements ) ) {
+					$rowsAffected = $stmt->affected_rows;
+				}
 				
 				$stmt->close();
+				
+			} else {
+				self::_err( self::$db->error );
 			}
 			
 			return $rowsAffected;
 		}
 		
-		function delete( $query, $replacements ) {
-			return $this->update( $query, $replacements );
+		static function delete( $query, $replacements ) {
+			return self::update( $query, $replacements );
 		}
 		
-		function insert( $query, $replacements ) {
+		static function insert( $query, $replacements ) {
+		
+			self::_log( $query, $replacements );
 		
 			$insertId = null;
 			
-			if( $stmt = $this->db->prepare( $query ) ) {
+			if( $stmt = self::$db->prepare( $query ) ) {
 				
-				$this->_executeQuery( $stmt, $replacements );
-				
-				$insertId = $stmt->insert_id;
+				if( self::_executeQuery( $stmt, $replacements ) ) {
+					$insertId = $stmt->insert_id;
+				}
 				
 				$stmt->close();
+				
+			} else {
+				self::_err( self::$db->error );
 			}
 			
 			return $insertId;
 		}
 		
+		static function batch( $queries ) {
+			self::$db->autocommit( false );
+			
+			foreach( $queries as $type => $data ) {
+				$exitCode = self::{$type}( $data['query'], $data['replacements'] );
+				if( ( is_integer( $exitCode ) && $exitCode < 0 ) || ( is_bool( $exitCode ) && !$exitCode ) ) {
+					self::$db->rollback();
+					self::$db->autocommit( true );
+					return false;
+				}
+			}
+			self::$db->commit();
+			self::$db->autocommit( true );
+			return true;
+		}
+		
+		static function getErrorList() {
+			return self::$errorsList;
+		}
+		
 	// *** PRIVATE METHODS *** //
-		private function _executeQuery( $stmt, $replacements ) {
+		private static function _executeQuery( $stmt, $replacements ) {
 			// capaz que no hay tokens a reemplezar
 			if( count( $replacements ) ) {
 				// internamente aca se hace un $stmt->bind_param()
-				$this->_bindParams( $stmt, $this->_addParams( $replacements ) );
+				self::_bindParams( $stmt, self::_addParams( $replacements ) );
 			}
 			
 			// ejecutamos la consultado
-			$stmt->execute();
+			if( !$stmt->execute() ) {
+				self::_err( $stmt->error );
+				return false;
+			}
+			
+			return true;
 		}
 	
-		private function _addParams( $replacements ) {
+		private static function _addParams( $replacements ) {
 			$types = '';
-			$this->values = array();
+			self::$replacements = array();
 			
 			for( $i = 0, $l = count( $replacements ); $i < $l; $i++ ) {
-				$types .= $this->_gettype( $replacements[$i] );
-				$this->values[] = &$replacements[$i];
+				$types .= self::_gettype( $replacements[$i] );
+				self::$replacements[] = &$replacements[$i];
 			}
 
 			// esto sera el argumento para $stmt->bind_param();
-			return array_merge( array( $types ), $this->values );
+			$args = array_merge( array( $types ), self::$replacements );
+			return $args;
 		}
 		
-		private function _gettype( $value ) {
+		private static function _gettype( $value ) {
 			$type = gettype( $value );
-			
-			if( isset( $this->typesDict[$type] ) ) {
-				return $this->typesDict[$type];
+
+			if( isset( self::$typesDict[$type] ) ) {
+				return self::$typesDict[$type];
 			}
 			
-			die( 'Invalid data type' );
+			self::_err( 'Invalid data type: ' . $type );
 		}
 		
-		private function _bindParams( &$stmt, &$args ) {
+		private static function _bindParams( $stmt, $args ) {
 			call_user_func_array( array( $stmt, 'bind_param' ), $args );
 		}
 		
-		private function _bindResult( &$stmt, &$args ) {
+		private static function _bindResult( $stmt, $args ) {
 			call_user_func_array( array( $stmt, 'bind_result' ) , $args );
+		}
+		
+		private static function _log( $query, $replacements ) {
+			__log( 'executing the query: ' );
+			__log( $query );
+			__log( 'with the params: ' );
+			__log( $replacements );
+		}
+		
+		private static function _err( $msg ) {
+			__err( $msg );
+			
+			$errorString = self::$db->error;
+			$theError = null;
+			
+			foreach( self::$errorsDict as $errorStringMap => $errorMeaning ) {
+				if( $errorString == $errorStringMap || @preg_match( $errorStringMap, $errorString ) ) {
+					$theError = $errorMeaning;
+					break;
+				}
+			}
+			
+			if( !$theError ) {
+				self::$errorsList[] = self::$errorsCode[self::$db->errno];
+			} else {
+				self::$errorsList[] = $theError;
+			}
 		}
 	}
 	

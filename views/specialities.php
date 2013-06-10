@@ -1,17 +1,13 @@
-<!DOCTYPE html>
-<html lang="es">
-	<head>
-		<?php t_headTag( 'Especialidades' ); ?>
-		<style>
-			label {
-				cursor: default;
-			}
-		</style>
-	</head>
-	<body>
-		<?php t_headerTag( $username, 'specialities' ); ?>
+<?php t_startHead( 'Especialidades' ); ?>
+	<style>
+		label {
+			cursor: default;
+		}
+	</style>
+<?php t_endHead(); ?>
+<?php t_startBody( $username, 'specialities'  ); ?>
 	
-		<div class="container">
+		<?php t_startWrapper(); ?>
 			<?php if( $createSuccess ): ?>
 			<div class="alert alert-success">
 				<a class="close" data-dismiss="alert" href="#">&times;</a>
@@ -78,9 +74,11 @@
 					<tr data-speciality-id="<?php echo $speciality['id']; ?>">
 						<td class="is2-speciality-name"><?php echo $speciality['nombre']; ?></td>
 						<td>
+						<?php if( $speciality['id'] != 1 ): ?>
 							<a class="btn is2-trigger-edit" href="#is2-modal-edit" data-toggle="modal" data-speciality-id="<?php echo $speciality['id']; ?>">Editar</a>
 							<a class="btn btn-danger is2-trigger-remove" href="#is2-modal-remove" data-toggle="modal" data-speciality-id="<?php echo $speciality['id']; ?>">Borrar</a>
 						</td>
+						<?php endif; ?>
 					</tr>
 				<?php endforeach; ?>
 				</tbody>
@@ -120,9 +118,10 @@
 			<input type="hidden" name="id">
 		</form>
 		
-		<?php t_footerTag(); ?>
-	</body>
-</html>
+		<?php t_endWrapper(); ?>
+		
+<?php t_endBody(); ?>
+
 <script>
 (function() {
 	$( '.is2-grid' ).delegate( '.is2-trigger-edit', 'click', function( e ) {

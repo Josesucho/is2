@@ -3,103 +3,60 @@
 // ************** /
 // ESTAS FUNCIONES SE USAN EN LAS VIEWS
 // ************* /
-	function t_headerTag( $username, $currentTab ) {
-		echo <<<HEADER
-		<header>
-			<h1>Climedis</h1>
-			<div class="alert alert-info is2-welcome">
-				Hola, <strong>$username</strong>
-				<a href="/cerrar-sesion" class="btn btn-info btn-mini">Salir</a>
-			</div>
-			<nav class="navbar">
-				<div class="navbar-inner">
-					<ul class="nav">
-HEADER;
-			echo 		'<li class="' . ( $currentTab == 'appointments' ? 'active' : '' ) . '">' .
-							'<a href="/turnos">Turnos</a>' .
-						'</li>';
-			echo			'<li class="' . ( $currentTab == 'doctors' ? 'active' : '' ) . '">' .
-							'<a href="/medicos">Médicos</a>' .
-						'</li>';
-			echo			'<li class="' . ( $currentTab == 'patients' ? 'active' : '' ) . '">' .
-							'<a href="/pacientes">Pacientes</a>' .
-						'</li>';
-			echo			'<li class="' . ( $currentTab == 'insurances' ? 'active' : '' ) . '">' .
-							'<a href="/obras-sociales">Obras sociales</a>' .
-						'</li>';
-			echo			'<li class="' . ( $currentTab == 'specialities' ? 'active' : '' ) . '">' .
-							'<a href="/especialidades">Especialidades</a>' .
-						'</li>';
-			echo <<<HEADER
-					</ul>
-				</div>
-			</nav>
-		</header>
-HEADER;
+	function t_startHead( $page ) {
+		require './views/_head.start.php';
 	}
 	
-	function t_footerTag() {
-		echo <<<FOOTER
-		<footer>
-			<img src="/img/logo.footer.png">
-			<span>Todos los derechos reservados &copy; 2013</span>
-		</footer>
-FOOTER;
+	function t_endHead() {
+		require './views/_head.end.php';
 	}
 	
-	function t_ascDescMenu( $fieldName ) {
-		echo <<<DROPDOWNMENU
-		<div class="is2-ascdescmenu btn btn-mini btn-group">
-			<a class="dropdown-toggle" data-toggle="dropdown" href="#">
-				<span class="caret"></span>
-			</a>
-			<ul class="dropdown-menu">
-				<li>
-					<a tabindex="-1" href="#" class="is2-trigger-orderby" data-field-name="$fieldName" data-orderby="asc">Ordernar vía ascendente</a>
-				</li>
-				<li>
-					<a tabindex="-1" href="#" class="is2-trigger-orderby" data-field-name="$fieldName" data-orderby="desc">Ordernar vía descendente</a>
-				</li>
-			</ul>
-		</div>
-DROPDOWNMENU;
+	function t_startBody( $username, $currentTab ) {
+		require './views/_body.start.php';
+	}
+	
+	function t_endBody() {
+		require './views/_body.end.php';
+	}
+	
+	function t_startWrapper() {
+		require './views/_wrapper.start.php';
+	}
+	
+	function t_endWrapper() {
+		require './views/_wrapper.end.php';
+	}
+	
+	function t_dateMenu() {
+		require './views/_appointments.date.menu.php';
+	}
+	
+	function t_timeMenu() {
+		require './views/_appointments.time.menu.php';
 	}
 	
 	function t_statusMenu() {
-		echo <<<DROPDOWNMENU
-		<div class="is2-statusmenu btn btn-mini btn-group">
-			<a class="dropdown-toggle" data-toggle="dropdown" href="#">
-				<span class="caret"></span>
-			</a>
-			<ul class="dropdown-menu">
-				<li>
-					<a tabindex="-1" href="#" class="is2-trigger-status" data-field-name="estado" data-field-value="confirmados">Mostrar solo turnos confirmados</a>
-				</li>
-				<li>
-					<a tabindex="-1" href="#" class="is2-trigger-status" data-field-name="estado" data-field-value="cancelados">Mostrar solo turnos cancelados</a>
-				</li>
-				<li>
-					<a tabindex="-1" href="#" class="is2-trigger-status" data-field-name="estado" data-field-value="todos">Mostrar todos los turnos</a>
-				</li>
-			</ul>
-		</div>
-DROPDOWNMENU;
+		require './views/_appointments.status.menu.php';
 	}
 	
-	function t_headTag( $page ) {
-		echo <<<HEAD
-		<meta charset="utf-8">
-		<title>Aplicacion - $page</title>
-		<link href="/css/bootstrap.css" rel="stylesheet">
-		<script src="/js/jquery-2.0.0.min.js"></script>
-		<script src="/js/bootstrap.min.js"></script>
-		<script src="/js/bootstrap-datepicker.js"></script>
-		<script src="/js/bootstrap-datepicker.es.js"></script>
-		<link href="/css/datepicker.css" rel="stylesheet">
-		<script src="/js/bootstrap-timepicker.js"></script>
-		<link href="/css/bootstrap-timepicker.css" rel="stylesheet">
-		<link href="/css/is2.main.css" rel="stylesheet">
-HEAD;
+	function t_appointmentNewRow( $appointmentDateLocale ) {
+		require './views/_appointments.row.new.php';
+	}
+	
+	function t_lastNameMenu() {
+		require './views/_patients.lastname.menu.php';
+	}
+	
+	function t_firstNameMenu() {
+		require './views/_patients.firstname.menu.php';
+	}
+
+	function t_birthDateMenu() {
+		require './views/_patients.birthname.menu.php';
+	}
+	
+	function t_setCustomTypeface() {
+		require './views/_custom.fontface.php';
 	}
 
 ?>
